@@ -8,10 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 
 @Composable
 fun PortfolioApp() {
@@ -20,14 +22,22 @@ fun PortfolioApp() {
         mutableStateOf(Screen.Home)
     }
 
-    ProfileHeader()
+    // Primary colors explicitly defined
+    val primaryColor = Color(0xFF2196F3) // Blue
+    val primaryVariantColor = Color(0xFF1976D2) // Darker Blue
+    val secondaryColor = Color(0xFF03DAC5) // Teal
+    val surfaceColor = Color(0xFFFFFFFF) // White
+    val backgroundColor = Color(0xFFF5F5F5) // Light Gray
 
     // Main app scaffold with bottom navigation
     Scaffold(
+        containerColor = backgroundColor,
+        contentColor = Color.Black,
         bottomBar = {
             BottomNavigationBar(
                 selectedScreen = selectedScreen,
-                onScreenSelected = { selectedScreen = it }
+                onScreenSelected = { selectedScreen = it },
+                primaryColor = primaryColor
             )
         }
     ) { paddingValues ->
@@ -39,7 +49,11 @@ fun PortfolioApp() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Profile header stays consistent across all screens
-            ProfileHeader()
+            ProfileHeader(
+                primaryColor = primaryColor,
+                secondaryColor = secondaryColor,
+                surfaceColor = surfaceColor
+            )
 
             // Show the appropriate screen based on selection
             when (selectedScreen) {
@@ -55,15 +69,26 @@ fun PortfolioApp() {
 @Composable
 fun BottomNavigationBar(
     selectedScreen: Screen,
-    onScreenSelected: (Screen) -> Unit
+    onScreenSelected: (Screen) -> Unit,
+    primaryColor: Color
 ) {
-    NavigationBar {
+    NavigationBar(
+        containerColor = Color.White,
+        contentColor = primaryColor
+    ) {
         // Home navigation item
         NavigationBarItem(
             selected = selectedScreen == Screen.Home,
             onClick = { onScreenSelected(Screen.Home) },
             icon = { Icon(painterResource(id = R.drawable.ic_home), contentDescription = "Home") },
-            label = { Text("Home") }
+            label = { Text("Home") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = primaryColor,
+                selectedTextColor = primaryColor,
+                indicatorColor = Color.White,
+                unselectedIconColor = Color.Gray,
+                unselectedTextColor = Color.Gray
+            )
         )
 
         // Projects navigation item
@@ -71,7 +96,14 @@ fun BottomNavigationBar(
             selected = selectedScreen == Screen.Projects,
             onClick = { onScreenSelected(Screen.Projects) },
             icon = { Icon(painterResource(id = R.drawable.ic_projects), contentDescription = "Projects") },
-            label = { Text("Projects") }
+            label = { Text("Projects") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = primaryColor,
+                selectedTextColor = primaryColor,
+                indicatorColor = Color.White,
+                unselectedIconColor = Color.Gray,
+                unselectedTextColor = Color.Gray
+            )
         )
 
         // Skills navigation item
@@ -79,7 +111,14 @@ fun BottomNavigationBar(
             selected = selectedScreen == Screen.Skills,
             onClick = { onScreenSelected(Screen.Skills) },
             icon = { Icon(painterResource(id = R.drawable.ic_skills), contentDescription = "Skills") },
-            label = { Text("Skills") }
+            label = { Text("Skills") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = primaryColor,
+                selectedTextColor = primaryColor,
+                indicatorColor = Color.White,
+                unselectedIconColor = Color.Gray,
+                unselectedTextColor = Color.Gray
+            )
         )
 
         // Contact navigation item
@@ -87,12 +126,17 @@ fun BottomNavigationBar(
             selected = selectedScreen == Screen.Contact,
             onClick = { onScreenSelected(Screen.Contact) },
             icon = { Icon(painterResource(id = R.drawable.ic_contact), contentDescription = "Contact") },
-            label = { Text("Contact") }
+            label = { Text("Contact") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = primaryColor,
+                selectedTextColor = primaryColor,
+                indicatorColor = Color.White,
+                unselectedIconColor = Color.Gray,
+                unselectedTextColor = Color.Gray
+            )
         )
     }
 }
-
-
 
 // Simple enum to represent different screens
 enum class Screen {
@@ -100,13 +144,17 @@ enum class Screen {
 }
 
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(
+    primaryColor: Color = Color(0xFF2196F3),
+    secondaryColor: Color = Color(0xFF03DAC5),
+    surfaceColor: Color = Color.White
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = surfaceColor)
     ) {
         Column(
             modifier = Modifier
@@ -129,7 +177,7 @@ fun ProfileHeader() {
             Text(
                 text = "John Doe",
                 fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.primary,
+                color = primaryColor,
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
             )
@@ -138,7 +186,7 @@ fun ProfileHeader() {
             Text(
                 text = "Android Developer",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.secondary,
+                color = secondaryColor,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )

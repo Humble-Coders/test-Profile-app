@@ -27,6 +27,15 @@ data class SkillData(@DrawableRes val icon: Int, val name: String, val level: Fl
 
 @Composable
 fun SkillScreen() {
+    // Explicitly define colors
+    val primaryColor = Color(0xFF2196F3) // Blue
+    val primaryContainerColor = Color(0xFFE3F2FD) // Light blue
+    val cardColor = Color(0xFFF5F5F5) // Light gray
+    val buttonColor = Color(0xFF2196F3) // Blue
+    val buttonTextColor = Color(0xFFFFFFFF) // White
+    val textPrimaryColor = Color(0xFF000000) // Black
+    val textSecondaryColor = Color(0xFF757575) // Dark gray
+
     // Skills data with initial values
     var skills by remember {
         mutableStateOf(
@@ -54,7 +63,7 @@ fun SkillScreen() {
         Text(
             text = "My Skills",
             fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.primary,
+            color = primaryColor,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -67,7 +76,14 @@ fun SkillScreen() {
             modifier = Modifier.weight(1f)
         ) {
             items(skills) { skill ->
-                SkillCard(skill)
+                SkillCard(
+                    skill = skill,
+                    cardColor = cardColor,
+                    primaryContainerColor = primaryContainerColor,
+                    primaryColor = primaryColor,
+                    textPrimaryColor = textPrimaryColor,
+                    textSecondaryColor = textSecondaryColor
+                )
             }
         }
 
@@ -77,7 +93,11 @@ fun SkillScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = buttonColor,
+                contentColor = buttonTextColor
+            )
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -92,7 +112,7 @@ fun SkillScreen() {
     if (showAddSkillDialog) {
         AlertDialog(
             onDismissRequest = { showAddSkillDialog = false },
-            title = { Text("Add New Skill") },
+            title = { Text("Add New Skill", color = textPrimaryColor) },
             text = {
                 Column {
                     OutlinedTextField(
@@ -116,13 +136,22 @@ fun SkillScreen() {
                             newSkillName = ""
                             showAddSkillDialog = false
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = primaryColor,
+                        contentColor = buttonTextColor
+                    )
                 ) {
                     Text("Add")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showAddSkillDialog = false }) {
+                TextButton(
+                    onClick = { showAddSkillDialog = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = primaryColor
+                    )
+                ) {
                     Text("Cancel")
                 }
             }
@@ -131,12 +160,19 @@ fun SkillScreen() {
 }
 
 @Composable
-fun SkillCard(skill: SkillData) {
+fun SkillCard(
+    skill: SkillData,
+    cardColor: Color = Color(0xFFF5F5F5),
+    primaryContainerColor: Color = Color(0xFFE3F2FD),
+    primaryColor: Color = Color(0xFF2196F3),
+    textPrimaryColor: Color = Color(0xFF000000),
+    textSecondaryColor: Color = Color(0xFF757575)
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -147,7 +183,7 @@ fun SkillCard(skill: SkillData) {
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(primaryContainerColor),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -163,7 +199,7 @@ fun SkillCard(skill: SkillData) {
             Text(
                 text = skill.name,
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = textPrimaryColor,
                 textAlign = TextAlign.Center
             )
 
@@ -173,15 +209,15 @@ fun SkillCard(skill: SkillData) {
             LinearProgressIndicator(
                 progress = skill.level,
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                color = primaryColor,
+                trackColor = Color(0xFFE0E0E0) // Light gray track
             )
 
             // Skill level as percentage
             Text(
                 text = "${(skill.level * 100).toInt()}%",
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.secondary,
+                color = textSecondaryColor,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }

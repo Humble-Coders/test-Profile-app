@@ -32,6 +32,17 @@ data class ProjectData(
 
 @Composable
 fun ProjectsScreen() {
+    // Explicitly defined colors
+    val primaryColor = Color(0xFF2196F3) // Blue
+    val surfaceColor = Color(0xFFFFFFFF) // White
+    val completedColor = Color(0xFFE8F5E9) // Light green
+    val inProgressColor = Color(0xFFFFF8E1) // Light amber
+    val completedTextColor = Color(0xFF388E3C) // Green text
+    val inProgressTextColor = Color(0xFFFFA000) // Amber text
+    val buttonColor = Color(0xFF2196F3) // Blue
+    val buttonTextColor = Color(0xFFFFFFFF) // White
+    val dividerColor = Color(0xFFE0E0E0) // Light gray
+
     // State for selected project category
     var selectedCategory by remember { mutableStateOf("Completed") }
 
@@ -49,7 +60,10 @@ fun ProjectsScreen() {
         // Project category selection
         ProjectCategoryTabs(
             selectedCategory = selectedCategory,
-            onCategorySelected = { selectedCategory = it }
+            onCategorySelected = { selectedCategory = it },
+            primaryColor = primaryColor,
+            surfaceColor = surfaceColor,
+            dividerColor = dividerColor
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -81,7 +95,14 @@ fun ProjectsScreen() {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(filteredProjects) { project ->
-                    ProjectItem(project)
+                    ProjectItem(
+                        project = project,
+                        completedColor = completedColor,
+                        inProgressColor = inProgressColor,
+                        completedTextColor = completedTextColor,
+                        inProgressTextColor = inProgressTextColor,
+                        dividerColor = dividerColor
+                    )
                 }
             }
         }
@@ -92,7 +113,11 @@ fun ProjectsScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = buttonColor,
+                contentColor = buttonTextColor
+            )
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -115,7 +140,10 @@ fun ProjectsScreen() {
                     completed = selectedCategory == "Completed"
                 )
                 showAddDialog = false
-            }
+            },
+            primaryColor = primaryColor,
+            textColor = Color.Black,
+            buttonTextColor = buttonTextColor
         )
     }
 }
@@ -123,7 +151,10 @@ fun ProjectsScreen() {
 @Composable
 fun ProjectCategoryTabs(
     selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
+    primaryColor: Color,
+    surfaceColor: Color,
+    dividerColor: Color
 ) {
     // Tabs for project categories
     TabRow(
@@ -131,9 +162,9 @@ fun ProjectCategoryTabs(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.primary,
-        divider = { Divider(thickness = 2.dp, color = MaterialTheme.colorScheme.primaryContainer) }
+        containerColor = surfaceColor,
+        contentColor = primaryColor,
+        divider = { Divider(thickness = 2.dp, color = dividerColor) }
     ) {
         // Completed projects tab
         Tab(
@@ -152,9 +183,20 @@ fun ProjectCategoryTabs(
 }
 
 @Composable
-fun ProjectItem(project: ProjectData) {
+fun ProjectItem(
+    project: ProjectData,
+    completedColor: Color = Color(0xFFE8F5E9),
+    inProgressColor: Color = Color(0xFFFFF8E1),
+    completedTextColor: Color = Color(0xFF388E3C),
+    inProgressTextColor: Color = Color(0xFFFFA000),
+    dividerColor: Color = Color(0xFFE0E0E0)
+) {
     // State for expanding/collapsing project details
     var expanded by remember { mutableStateOf(false) }
+
+    val backgroundColor = if (project.completed) completedColor else inProgressColor
+    val statusTextColor = if (project.completed) completedTextColor else inProgressTextColor
+    val textColor = Color(0xFF000000) // Black
 
     Card(
         modifier = Modifier
@@ -162,12 +204,7 @@ fun ProjectItem(project: ProjectData) {
             .clickable { expanded = !expanded },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (project.completed)
-                Color(0xFFE8F5E9) // Light green for completed
-            else
-                Color(0xFFFFF8E1) // Light amber for in-progress
-        )
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             // Project header
@@ -183,15 +220,12 @@ fun ProjectItem(project: ProjectData) {
                         text = project.name,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = textColor
                     )
                     Text(
                         text = if (project.completed) "Completed" else "In Progress",
                         fontSize = 14.sp,
-                        color = if (project.completed)
-                            Color(0xFF388E3C) // Green text for completed
-                        else
-                            Color(0xFFFFA000) // Amber text for in-progress
+                        color = statusTextColor
                     )
                 }
 
@@ -202,7 +236,8 @@ fun ProjectItem(project: ProjectData) {
                             Icons.Default.KeyboardArrowUp
                         else
                             Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (expanded) "Collapse" else "Expand"
+                        contentDescription = if (expanded) "Collapse" else "Expand",
+                        tint = textColor
                     )
                 }
             }
@@ -218,7 +253,7 @@ fun ProjectItem(project: ProjectData) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Divider()
+                    Divider(color = dividerColor)
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Tech stack
@@ -226,9 +261,13 @@ fun ProjectItem(project: ProjectData) {
                         Text(
                             text = "Tech Stack:",
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.width(100.dp)
+                            modifier = Modifier.width(100.dp),
+                            color = textColor
                         )
-                        Text(text = project.techStack)
+                        Text(
+                            text = project.techStack,
+                            color = textColor
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -238,9 +277,13 @@ fun ProjectItem(project: ProjectData) {
                         Text(
                             text = "Description:",
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.width(100.dp)
+                            modifier = Modifier.width(100.dp),
+                            color = textColor
                         )
-                        Text(text = project.description)
+                        Text(
+                            text = project.description,
+                            color = textColor
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -254,7 +297,10 @@ fun ProjectItem(project: ProjectData) {
 @Composable
 fun AddProjectDialog(
     onDismiss: () -> Unit,
-    onAddProject: (String, String, String) -> Unit
+    onAddProject: (String, String, String) -> Unit,
+    primaryColor: Color = Color(0xFF2196F3),
+    textColor: Color = Color.Black,
+    buttonTextColor: Color = Color.White
 ) {
     var name by remember { mutableStateOf("") }
     var techStack by remember { mutableStateOf("") }
@@ -262,7 +308,7 @@ fun AddProjectDialog(
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        title = { Text("Add New Project") },
+        title = { Text("Add New Project", color = textColor) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -305,13 +351,23 @@ fun AddProjectDialog(
                         onAddProject(name, techStack, description)
                     }
                 },
-                enabled = name.isNotBlank() && techStack.isNotBlank() && description.isNotBlank()
+                enabled = name.isNotBlank() && techStack.isNotBlank() && description.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primaryColor,
+                    contentColor = buttonTextColor,
+                    disabledContainerColor = Color(0xFFBDBDBD) // Gray when disabled
+                )
             ) {
                 Text("Add Project")
             }
         },
         dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
+            TextButton(
+                onClick = { onDismiss() },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = primaryColor
+                )
+            ) {
                 Text("Cancel")
             }
         }
