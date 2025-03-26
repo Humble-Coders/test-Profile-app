@@ -29,6 +29,7 @@ data class SkillData(@DrawableRes val icon: Int, val name: String, val level: Fl
 fun SkillScreen() {
     // Explicitly define colors
     val primaryColor = Color(0xFF2196F3) // Blue
+    val secondaryColor = Color(0xFF03DAC5) // Teal
     val primaryContainerColor = Color(0xFFE3F2FD) // Light blue
     val cardColor = Color(0xFFF5F5F5) // Light gray
     val buttonColor = Color(0xFF2196F3) // Blue
@@ -54,57 +55,75 @@ fun SkillScreen() {
     var showAddSkillDialog by remember { mutableStateOf(false) }
     var newSkillName by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Section title
-        Text(
-            text = "My Skills",
-            fontSize = 20.sp,
-            color = primaryColor,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Grid of skills - easier to understand than chunking in a lazy column
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.weight(1f)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            items(skills) { skill ->
-                SkillCard(
-                    skill = skill,
-                    cardColor = cardColor,
-                    primaryContainerColor = primaryContainerColor,
-                    primaryColor = primaryColor,
-                    textPrimaryColor = textPrimaryColor,
-                    textSecondaryColor = textSecondaryColor
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Include Profile header at the top
+            ProfileHeader(
+                primaryColor = primaryColor,
+                secondaryColor = secondaryColor
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Section title
+                Text(
+                    text = "My Skills",
+                    fontSize = 20.sp,
+                    color = primaryColor,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-            }
-        }
 
-        // Add skill button at the bottom
-        Button(
-            onClick = { showAddSkillDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = buttonColor,
-                contentColor = buttonTextColor
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add Skill",
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text("Add New Skill")
+                // Grid of skills - easier to understand than chunking in a lazy column
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(4.dp, 4.dp, 4.dp, 80.dp), // Bottom padding for navigation
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(skills) { skill ->
+                        SkillCard(
+                            skill = skill,
+                            cardColor = cardColor,
+                            primaryContainerColor = primaryContainerColor,
+                            primaryColor = primaryColor,
+                            textPrimaryColor = textPrimaryColor,
+                            textSecondaryColor = textSecondaryColor
+                        )
+                    }
+                }
+
+                // Add skill button at the bottom
+                Button(
+                    onClick = { showAddSkillDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = buttonTextColor
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Skill",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Add New Skill")
+                }
+
+                // Add bottom spacing
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 

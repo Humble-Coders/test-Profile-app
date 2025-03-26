@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 fun ContactScreen() {
     // Explicitly define colors
     val primaryColor = Color(0xFF2196F3) // Blue
+    val secondaryColor = Color(0xFF03DAC5) // Teal
     val surfaceVariantColor = Color(0xFFE3F2FD) // Light Blue
 
     val contacts = listOf(
@@ -34,19 +35,34 @@ fun ContactScreen() {
         Contact(Icons.Default.List, "GitHub", "github.com/johndoe")
     )
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Text(
-                text = "Contact Me",
-                fontSize = 24.sp,
-                color = primaryColor
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Include Profile header at the top
+            ProfileHeader(
+                primaryColor = primaryColor,
+                secondaryColor = secondaryColor
             )
-        }
-        items(contacts) { contact ->
-            ContactCard(contact, surfaceVariantColor)
+
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp, 16.dp, 16.dp, 8.dp), // Bottom padding for navigation
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    Text(
+                        text = "Contact Me",
+                        fontSize = 24.sp,
+                        color = primaryColor
+                    )
+                }
+                items(contacts) { contact ->
+                    ContactCard(contact, surfaceVariantColor)
+                }
+            }
         }
     }
 }

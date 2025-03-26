@@ -34,6 +34,7 @@ data class ProjectData(
 fun ProjectsScreen() {
     // Explicitly defined colors
     val primaryColor = Color(0xFF2196F3) // Blue
+    val secondaryColor = Color(0xFF03DAC5) // Teal
     val surfaceColor = Color(0xFFFFFFFF) // White
     val completedColor = Color(0xFFE8F5E9) // Light green
     val inProgressColor = Color(0xFFFFF8E1) // Light amber
@@ -52,79 +53,99 @@ fun ProjectsScreen() {
     // State for add project dialog
     var showAddDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Project category selection
-        ProjectCategoryTabs(
-            selectedCategory = selectedCategory,
-            onCategorySelected = { selectedCategory = it },
-            primaryColor = primaryColor,
-            surfaceColor = surfaceColor,
-            dividerColor = dividerColor
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Filter projects based on selected category
-        val filteredProjects = projects.filter {
-            if (selectedCategory == "Completed") it.completed else !it.completed
-        }
-
-        // Project list
-        if (filteredProjects.isEmpty()) {
-            // Empty state
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No ${selectedCategory.lowercase()} projects yet",
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-            }
-        } else {
-            // Project list
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(filteredProjects) { project ->
-                    ProjectItem(
-                        project = project,
-                        completedColor = completedColor,
-                        inProgressColor = inProgressColor,
-                        completedTextColor = completedTextColor,
-                        inProgressTextColor = inProgressTextColor,
-                        dividerColor = dividerColor
-                    )
-                }
-            }
-        }
-
-        // Add project button
-        Button(
-            onClick = { showAddDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = buttonColor,
-                contentColor = buttonTextColor
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add Project",
-                modifier = Modifier.padding(end = 8.dp)
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Include Profile header at the top
+            ProfileHeader(
+                primaryColor = primaryColor,
+                secondaryColor = secondaryColor
             )
-            Text("Add New Project")
+
+            // Projects content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Project category selection
+                ProjectCategoryTabs(
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { selectedCategory = it },
+                    primaryColor = primaryColor,
+                    surfaceColor = surfaceColor,
+                    dividerColor = dividerColor
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Filter projects based on selected category
+                val filteredProjects = projects.filter {
+                    if (selectedCategory == "Completed") it.completed else !it.completed
+                }
+
+                // Project list
+                if (filteredProjects.isEmpty()) {
+                    // Empty state
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No ${selectedCategory.lowercase()} projects yet",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
+                } else {
+                    // Project list
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 80.dp) // Add padding for bottom navigation
+                    ) {
+                        items(filteredProjects) { project ->
+                            ProjectItem(
+                                project = project,
+                                completedColor = completedColor,
+                                inProgressColor = inProgressColor,
+                                completedTextColor = completedTextColor,
+                                inProgressTextColor = inProgressTextColor,
+                                dividerColor = dividerColor
+                            )
+                        }
+                    }
+                }
+
+                // Add project button
+                Button(
+                    onClick = { showAddDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = buttonTextColor
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Project",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Add New Project")
+                }
+
+                // Add space at the bottom for navigation bar
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 
